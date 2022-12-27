@@ -1,5 +1,5 @@
 import skills
-from areas import Entity, Board
+from game_logic import Entity, Board
 from utils import clear_screen
 import time
 area1 = Board(10, 5)
