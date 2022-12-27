@@ -1,13 +1,17 @@
-from utils import Error
+from utils import Error, clear_screen
 import os
-from utils import clear_screen
+import time
 try:
     import keyboard
 except ImportError:
     os.system('pip3 install keyboard')
     import keyboard
+
+tickspeed = 20
+
 class Board:
-    def __init__(self, width:int, height:int) -> None:
+    def __init__(self, name:str, width:int, height:int) -> None:
+        self.name = name
         self.width = range(width)
         self.height = range(height)
         self.positions = {}
@@ -16,45 +20,72 @@ class Board:
                 self.positions[x, y] = None
         self.icon_list = []
     def create(self):
+        # board var
         board = ''
+        # length of current line
         cur_len = 0
+        # get height and width
         for y in self.height:
             for x in self.width:
+                # check if a variable position is = to None
                 if self.positions[x, y] == None:
+                    # if so append - to the board
                     board = board + '-'
+                    # and increse length
                     cur_len = cur_len + 1
+                # check if a variable position is the type of Entity
                 elif type(self.positions[x, y]) == Entity:
+                    # loop thru icon list
                     for i in self.icon_list:
+                        # check if icons pos equal to our current x, y
                         if i.pos == (x, y):
+                            # add icon to the board
                             board = board + i.icon
+                            # increase length
                             cur_len = cur_len + 1
+                # check if current length is greater than or equal too the max width value
                 if cur_len >= self.width[-1] + 1:
+                    # if so appened a new line char to the board
                     board = board + '\n'
+                    # and set current length to 0
                     cur_len = 0
+        ## return the board str to user
         return board
+    def __repr__(self) -> str:
+        return self.name
 
 class Entity:
-    def __init__(self, name:str, x:int, y:int, icon:str, board:Board, skills_list=[], cols={}, health=10, damage=1) -> None:
+    def __init__(self, name:str, x:int, y:int, icon:str, board:Board, cols={}, health=10, damage=1) -> None:
         self.name = name
         self.x = x
         self.y = y
         self.pos = (x, y)
         self.icon = icon
         self.board = board
-        self.skills_list = skills_list
         board.positions[self.pos] = self
         board.icon_list.append(self)
         self.health = health
         self.max_health = health
         self.damage = damage
         self.cols = cols
+        self.debug = False
     def check_death(self):
         if self.health <= 0:
-            print(self.board.positions[self.pos])
             self.board.positions[self.pos] = None
             self.x = None
             self.y = None
             self.pos = (self.x, self.y)
+    def return_stats(self):
+        stats = f'''HP: {self.health}/{self.max_health}
+DMG: {self.damage}
+'''
+        if self.debug == True:
+            stats = stats + f'''
+POS: {self.pos}
+X: {self.x}
+Y: {self.y}
+'''
+        return stats
     def move_right(self):
         self.__move__(1, 0, '+', 'right')
                 
@@ -67,13 +98,8 @@ class Entity:
     def move_down(self):
         self.__move__(0, 1, '+', 'down')
     
-    def __move__(self, x_val:int, y_val:int, plus_or_minus:str, cannot_move_msg:str, debug=False):
+    def __move__(self, x_val:int, y_val:int, plus_or_minus:str, cannot_move_msg:str):
         try:
-            if debug == True:
-                print('pos')
-                print(self.board.positions[self.x + x_val, self.y + y_val])
-                print('obj')
-                print(self.cols[c]['obj'])
             for c in self.cols:
                 if plus_or_minus == '+':
                     if self.board.positions[self.x + x_val, self.y + y_val] == None:
@@ -94,7 +120,8 @@ class Entity:
         except:
             print(Error.cannot_move_x(cannot_move_msg))
 
-    def start_movement_input(self):
+    def start_inputs(self):
+        time.sleep(4/tickspeed)
         while True:
             if keyboard.is_pressed('right_arrow'):
                 clear_screen()
@@ -112,6 +139,14 @@ class Entity:
                 clear_screen()
                 self.move_down()
                 break
+            if keyboard.is_pressed('ctrl+3'):
+                clear_screen()
+                if self.debug == False:
+                    self.debug = True
+                elif self.debug == True:
+                    self.debug = False
+                break
+
 
 
     def __update_pos__(self):

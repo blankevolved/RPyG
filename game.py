@@ -1,23 +1,19 @@
 import skills
-from game_logic import Entity, Board
+from game_logic import Entity, Board, tickspeed
 from utils import clear_screen
-import time
-area1 = Board(10, 5)
+area1 = Board('Main Board', 9, 5)
 
 
 
-hi1 = Entity('player', 0, 0, 'i', area1)
-hi2 = Entity('enemy', 1, 0, 'p', area1)
-hi2.health = 0
-hi2.check_death()
-tickspeed = 20
-hi1.cols[hi2] = {'obj':hi2, 'func':lambda: print('hello')}
+player = Entity('player', 0, 0, 'p', area1)
+hi2 = Entity('enemy', 4, 2, 'e', area1)
+
+player.cols[hi2] = {'obj':hi2, 'func':lambda: print('hello')}
 clear_screen()
 def main():
-    print(hi1.pos)
+    print(player.return_stats())
     print(area1.create())
-    time.sleep(4/tickspeed)
-    hi1.start_movement_input()
+    player.start_inputs()
 
 while True:
     main()
