@@ -9,6 +9,7 @@ except ImportError:
 
 tickspeed = 20
 current_board = None
+current_player = None
 
 
 class Board:
@@ -134,8 +135,10 @@ class Alive_Entity(Entity):
 class Player(Alive_Entity):
     def __init__(self, name: str, x: int, y: int, icon: str, board: Board, cols={}) -> None:
         global current_board
+        global current_player
         self.cols = cols
         current_board = board
+        current_player = self
         super().__init__(name, x, y, icon, board)
 
     def return_stats(self):
@@ -241,3 +244,9 @@ Y: {self.y}
 class Wall(Entity):
     def __init__(self, x: int, y: int, icon: str, board: Board) -> None:
         super().__init__('Wall', x, y, icon, board)
+
+def start_game():
+    current_player.board = current_board
+    print(current_player.return_stats())
+    print(current_board.create())
+    current_player.start_inputs()
