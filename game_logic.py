@@ -1,4 +1,4 @@
-from utils import Error, clear_screen
+from utils import clear_screen
 import os
 import time
 try:

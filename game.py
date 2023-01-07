@@ -1,6 +1,5 @@
-import skills
 from game_logic import Entity, Board, Player, Wall, current_board
-from utils import clear_screen
+
 
 
 area2 = Board('2nd board', 10, 5)
@@ -17,7 +16,6 @@ area1.add_new_transition('left', area2, area2.right)
 area2.add_new_transition('right', area1, area1.left)
 
 def main():
-    print()
     from game_logic import current_board
     player.board = current_board
     print(player.return_stats())
